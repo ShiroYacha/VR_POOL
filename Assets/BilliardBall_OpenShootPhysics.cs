@@ -1,16 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class BilliardBallTestPhysics : MonoBehaviour
-{
+public class BilliardBall_OpenShootPhysics : MonoBehaviour {
 
-	Vector3 initPosition = new Vector3 (0.0f, 0.055f, 0.0f);
+	Vector3 initPosition = new Vector3 (0.90f, 0.051f, 0.0f);
+	float maxForce = 10.0f;
+	float minForce = 5.0f;
 	float friction = 0.05f;
-	float maxForce = 40.0f;
-	float minForce = 20.0f;
-
+	
 	Rigidbody rigidBody;
-
+	
 	// Use this for initialization
 	void Start ()
 	{
@@ -27,24 +26,23 @@ public class BilliardBallTestPhysics : MonoBehaviour
 			ResetBall();
 		}
 	}
-
+	
 	void ApplyRandomForce()
 	{
 		float force = (maxForce - minForce) * Random.value + minForce;
-		rigidBody.AddForce (new Vector3(Random.value,0.0f,Random.value)*force, ForceMode.Impulse);
+		rigidBody.AddForce (new Vector3(-1.0f,0.0f,0.3f*(Random.value*2.0f-1.0f))*force, ForceMode.Impulse);
 	}
-
+	
 	void ResetBall()
 	{
 		this.transform.position = initPosition;
 		ApplyRandomForce ();
 	}
-
+	
 	void OnCollisionEnter (Collision col)
 	{
 		if (col.gameObject.name.StartsWith ("Hole")) {
 			ResetBall();
 		}
 	}
-
 }
