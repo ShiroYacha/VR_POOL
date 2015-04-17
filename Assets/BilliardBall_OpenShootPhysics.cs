@@ -1,48 +1,38 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class BilliardBall_OpenShootPhysics : MonoBehaviour {
+public class BilliardBall_OpenShootPhysics : BilliardBall_Physics {
+	
+	float maxForce = 5.0f;
+	float minForce = 3.0f;
 
-	Vector3 initPosition = new Vector3 (0.90f, 0.051f, 0.0f);
-	float maxForce = 10.0f;
-	float minForce = 5.0f;
-	float friction = 0.05f;
-	
-	Rigidbody rigidBody;
-	
-	// Use this for initialization
-	void Start ()
+	protected override void Start()
 	{
 		rigidBody = GetComponent<Rigidbody> ();
-		ResetBall ();
+		// Register the init position of the ball
+		initPosition= rigidBody.position;
+		// Register identity
+		GameSystem_8Ball.RegisterWhiteBall (this);
 	}
-	
+
 	// Update is called once per frame
-	void Update ()
+	protected override void Update ()
 	{
-		if (rigidBody.velocity.magnitude > friction) {
-			rigidBody.AddForce (rigidBody.velocity * (-1) * friction, ForceMode.Impulse);
-		} else {
-			ResetBall();
+		base.Update ();
+		// Shoot again
+		if (GameSystem_8Ball.Stabalized) {
+			// wake object up
+			rigidBody.WakeUp();
+			isSleeping = false;
+			// Apply the force
+			// ResetInitPosition();
+			ApplyRandomForce ();
 		}
 	}
 	
 	void ApplyRandomForce()
 	{
 		float force = (maxForce - minForce) * Random.value + minForce;
-		rigidBody.AddForce (new Vector3(-1.0f,0.0f,0.3f*(Random.value*2.0f-1.0f))*force, ForceMode.Impulse);
-	}
-	
-	void ResetBall()
-	{
-		this.transform.position = initPosition;
-		ApplyRandomForce ();
-	}
-	
-	void OnCollisionEnter (Collision col)
-	{
-		if (col.gameObject.name.StartsWith ("Hole")) {
-			ResetBall();
-		}
+		rigidBody.AddForce (new Vector3(-1.0f,0.0f,0.1f*(Random.value*2.0f-1.0f))*force, ForceMode.Impulse);
 	}
 }

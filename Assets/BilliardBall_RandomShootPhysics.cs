@@ -7,7 +7,7 @@ public class BilliardBall_RandomShootPhysics : MonoBehaviour
 	Vector3 initPosition = new Vector3 (0.90f, 0.051f, 0.0f);
 	float maxForce = 10.0f;
 	float minForce = 5.0f;
-	float friction = 0.05f;
+	float friction = 0.01f;
 
 	Rigidbody rigidBody;
 
