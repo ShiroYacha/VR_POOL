@@ -43,6 +43,13 @@ public class BilliardBall_Physics : MonoBehaviour
 			isSleeping=true;
 		}
 	}
+
+	public Vector3 Position
+	{
+		get{
+			return rigidBody.position;
+		}
+	}
 	
 	void OnCollisionEnter (Collision col)
 	{
