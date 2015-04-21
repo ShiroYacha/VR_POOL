@@ -11,11 +11,11 @@ public class GameSystem_8Ball : MonoBehaviour
 	static BilliardCue_Control _cue;
 	static GameSystem_8Ball _table;
 
-	public static bool Stabalized 
-	{
-		get 
-		{
-			return _whiteBall.IsSleeping && _eightBalls.TrueForAll (b => b.IsSleeping) && _cue.Hidden;
+	public static bool Stabalized {
+		get {
+			if (_whiteBall == null || !_eightBalls.Any () || _cue == null)
+				return false;
+			return _whiteBall.IsSleeping && _eightBalls.TrueForAll (b => b.IsSleeping);
 		}
 	}
 	
@@ -46,10 +46,10 @@ public class GameSystem_8Ball : MonoBehaviour
 			return;
 	}
 
-	public static void ActivateCue()
+	public static void ActivateCue (float wheel)
 	{
 		// Move it to the white ball at the direction of the closest ball to hit
-		_cue.Activate (_whiteBall.Position,Vector3.zero);
+		_cue.Activate (_whiteBall.Position, wheel);
 	}
 
 	public static void Register8Balls (BilliardBall_Physics eightBall)
@@ -69,12 +69,16 @@ public class GameSystem_8Ball : MonoBehaviour
 	{
 		_cue = cue;
 		// Ignore collision if the 8 balls are loaded already
+		Collider cueCollider = cue.gameObject.GetComponent<Collider> ();
 		if (_eightBalls != null)
 			foreach (var eightBall in _eightBalls) {
-				Physics.IgnoreCollision (cue.gameObject.GetComponent<Collider> (), eightBall.gameObject.GetComponent<Collider> ());
+			Physics.IgnoreCollision (cueCollider, eightBall.gameObject.GetComponent<Collider> ());
 			}
-		// Ignore collision with the table
-		Physics.IgnoreCollision (cue.gameObject.GetComponent<Collider> (),_table.gameObject.GetComponent<Collider>());
+		// Ignore collision with the table and its children
+		Physics.IgnoreCollision (cueCollider, _table.gameObject.GetComponent<Collider> ());
+		foreach (var collider in _table.gameObject.GetComponentsInChildren<Collider>()) {
+			Physics.IgnoreCollision (cueCollider, collider);
+		}
 		// Hide it
 		cue.Desactivate ();
 	}
