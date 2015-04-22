@@ -2,20 +2,38 @@
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
+using System;
+
+public enum BallColor{TBD,Full,Half}
 
 public class GameSystem_8Ball : MonoBehaviour
 {
-
 	static List<BilliardBall_Physics> _eightBalls = new List<BilliardBall_Physics> ();
 	static BilliardBall_Physics _whiteBall;
 	static BilliardCue_Control _cue;
 	static GameSystem_8Ball _table;
 
+	static bool isPlayer1sTurn;
+	static List<string> player1sBallInHole = new List<string>();
+	static List<string> player2sBallInHole = new List<string>();
+	static List<BilliardBall_Physics> tempBallInHole = new List<BilliardBall_Physics>();
+	static BallColor player1Color;
+	static BallColor player2Color;
+
+	GUIStyle activeStyle;
+	GUIStyle passiveStyle;
+
+	public static bool RoundFinished
+	{
+		get;set;
+	}
+
 	public static bool Stabalized {
 		get {
 			if (_whiteBall == null || !_eightBalls.Any () || _cue == null)
 				return false;
-			return _whiteBall.IsSleeping && _eightBalls.TrueForAll (b => b.IsSleeping);
+			return _whiteBall.IsSleeping && _eightBalls.TrueForAll (b => b.IsSleeping || !b.gameObject.activeSelf);
 		}
 	}
 	
@@ -23,6 +41,16 @@ public class GameSystem_8Ball : MonoBehaviour
 	void Start ()
 	{
 		_table = this;
+		// Initialize game rule
+		isPlayer1sTurn = true;
+		RoundFinished = true;
+		// Initialize GUI
+		player1Color = BallColor.TBD;
+		player2Color = BallColor.TBD;
+		activeStyle = new GUIStyle();
+		activeStyle.normal.textColor = Color.red;
+		passiveStyle = new GUIStyle();
+		passiveStyle.normal.textColor = Color.gray;
 	}
 	
 	// Update is called once per frame
@@ -31,11 +59,76 @@ public class GameSystem_8Ball : MonoBehaviour
 	
 	}
 
+	void OnGUI ()
+	{
+		// Get player's ball list
+		string player1List = " - Scored: ";
+		foreach(var ball in player1sBallInHole)
+			player1List+=" "+ball;
+		string player2List = " - Scored: ";
+		foreach(var ball in player2sBallInHole)
+			player2List+=" "+ball;
+		// Update GUI
+		GUI.Label (new Rect (15, 30, 100, 100), "Player 1 = "+player1Color + player1List,isPlayer1sTurn?activeStyle:passiveStyle );
+		GUI.Label (new Rect (15, 45, 100, 100), "Player 2 = "+player2Color+player2List,!isPlayer1sTurn?activeStyle:passiveStyle );
+	}
 	
 	void OnMouseUp ()
 	{
 		if(!_cue.OnReleasing)
+		{
+			RoundFinished = false;
 			_cue.OnReleasing = true;
+		}
+	}
+
+	public static void UpdateGameStatus()
+	{
+		if(tempBallInHole.Any())
+		{
+			var currentPlayerList = isPlayer1sTurn?player1sBallInHole:player2sBallInHole;
+			// if white ball falls
+			if(tempBallInHole.Any(b=>b.gameObject.name=="WhiteBall"))
+			{
+				// Reset everything and switch player
+				tempBallInHole.ForEach(b=>b.ResetInitPosition());
+				isPlayer1sTurn=!isPlayer1sTurn;
+			}
+			// if the 8 ball is in the hole
+			else if(tempBallInHole.Any(b=>b.gameObject.name=="8"))
+			{
+				// Reset game
+				_whiteBall.ResetInitPosition();
+				_eightBalls.ForEach(b=>b.ResetInitPosition());
+				// Display winner
+				string winningPlayer = string.Format("Player {0} wins!",isPlayer1sTurn==(currentPlayerList.Count==7)?"1":"2");
+				EditorUtility.DisplayDialog("Congrats!",winningPlayer,"Ok");
+			}
+			else
+			{
+				int firstBallNumber = Int32.Parse(tempBallInHole.First().gameObject.name);
+				// if it's the first ball in hole
+				if(player1Color==BallColor.TBD|| player2Color==BallColor.TBD)
+				{
+					// Set the color of both players
+					bool player1PlaysFull = isPlayer1sTurn==(firstBallNumber<8);
+					player1Color = player1PlaysFull?BallColor.Full:BallColor.Half;
+					player2Color = !player1PlaysFull?BallColor.Full:BallColor.Half;
+				}
+				// Update player's ball list
+				foreach(var ball in tempBallInHole)
+				{
+					if(player1Color==BallColor.Full&&Int32.Parse(ball.gameObject.name)<8)
+						player1sBallInHole.Add(ball.gameObject.name);
+					else 
+						player2sBallInHole.Add(ball.gameObject.name);
+				}
+			}
+			// Reset
+			tempBallInHole.Clear();
+		}
+		else // switch player if nothing happens
+			isPlayer1sTurn=!isPlayer1sTurn;
 	}
 
 	public static void BallInHole (BilliardBall_Physics objScript)
@@ -44,10 +137,13 @@ public class GameSystem_8Ball : MonoBehaviour
 		int number;
 		if (objScript.gameObject.name == "WhiteBall") {
 			// White ball falls
-			objScript.ResetInitPosition ();
+			tempBallInHole.Add(objScript);
+			// Sleep ball
+			objScript.gameObject.SetActive(false);
 		} else if (int.TryParse (objScript.gameObject.name, out number)) {
 			// 8-Ball falls
-			objScript.ResetInitPosition ();
+			tempBallInHole.Add(objScript);
+			objScript.gameObject.SetActive(false);
 		} else
 			// something else
 			return;

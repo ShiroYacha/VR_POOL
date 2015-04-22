@@ -3,11 +3,13 @@ using System.Collections;
 
 public class BilliardBall_Physics : MonoBehaviour
 {
+	const float MAX_TABLE_RANGE = 5.0f;
+
 	protected Vector3 initPosition;
 	protected Rigidbody rigidBody;
 
 	protected float friction = 0.015f;
-	protected float sleepThreshold = 0.3f;
+	protected float sleepThreshold = 0.5f;
 	
 	protected bool isSleeping = true;
 
@@ -37,14 +39,19 @@ public class BilliardBall_Physics : MonoBehaviour
 		if (rigidBody.velocity.magnitude > friction) {
 			rigidBody.AddForce (rigidBody.velocity * (-1) * friction, ForceMode.Impulse);
 		} else if(!isSleeping && rigidBody.velocity.magnitude<sleepThreshold) {
-			rigidBody.angularVelocity=Vector3.zero;
-			rigidBody.velocity = Vector3.zero;
-			rigidBody.Sleep();
-			isSleeping=true;
+			Sleep();
 		}
 		// Make sure balls don't jump
 		var tempVelocity = rigidBody.velocity;
 		rigidBody.velocity = new Vector3(tempVelocity.x,0,tempVelocity.z);
+		// Additionally check if ball falls off table
+		if((rigidBody.position - Vector3.zero).magnitude>MAX_TABLE_RANGE)
+		{
+			if(gameObject.name=="WhiteBall")
+				GameSystem_8Ball.BallInHole(this);
+			ResetInitPosition();
+			Sleep();
+		}
 	}
 
 	public Vector3 Position
@@ -53,7 +60,15 @@ public class BilliardBall_Physics : MonoBehaviour
 			return rigidBody.position;
 		}
 	}
-	
+
+	public void Sleep()
+	{
+		rigidBody.angularVelocity=Vector3.zero;
+		rigidBody.velocity = Vector3.zero;
+		rigidBody.Sleep();
+		isSleeping=true;
+	}
+
 	void OnCollisionEnter (Collision col)
 	{
 		if (col.gameObject.name.StartsWith ("Hole")) {
@@ -74,8 +89,6 @@ public class BilliardBall_Physics : MonoBehaviour
 		rigidBody.velocity = Vector3.zero;
 		rigidBody.angularVelocity = Vector3.zero;
 		// reset position 
-		if (name == "WhiteBall")
-			rigidBody.position = initPosition;
 		rigidBody.position = initPosition;
 		// reset activeness
 		if (!gameObject.activeSelf)

@@ -11,7 +11,6 @@ public class BilliardCue_Control : MonoBehaviour
 	float MAX_STRENGH = 30.0f;
 	float STRENGH_RELEASE_COEF = 3.0f;
 	float TOUCH_OFFSET = 0.2f;
-
 	Rigidbody rigidBody;
 	float tempRotation = 0.0f;
 	float tempStrengh = 0.0f;
@@ -39,22 +38,30 @@ public class BilliardCue_Control : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
-		if (Input.GetMouseButton (0) && tempStrengh < MAX_STRENGH) {
-			tempStrengh += Time.deltaTime * STRENGH_PER_FRAME;
-		} else if (onReleasing && tempStrengh > 0) {
-			rigidBody.velocity = -tempOffset * tempStrengh;
-			tempStrengh -= Time.deltaTime * STRENGH_PER_FRAME * STRENGH_RELEASE_COEF;
-		} else if (tempStrengh < 0.0f) {
-			tempStrengh = 0.0f;
-			onReleasing = false;
-			rigidBody.velocity = Vector3.zero;
-			rigidBody.angularVelocity = Vector3.zero;
-			Desactivate ();
-		} else if (GameSystem_8Ball.Stabalized) {
-			float wheel = Input.GetAxis ("Mouse ScrollWheel");
-			GameSystem_8Ball.ActivateCue (wheel*0.5f);
-
+		if (GameSystem_8Ball.Stabalized) {
+			if (!onReleasing) {
+				float wheel = Input.GetAxis ("Mouse ScrollWheel");
+				GameSystem_8Ball.ActivateCue (wheel * 0.5f);
+			}
+			if(!GameSystem_8Ball.RoundFinished && tempStrengh==0.0f)
+			{
+				GameSystem_8Ball.UpdateGameStatus();
+				GameSystem_8Ball.RoundFinished = true;
+			}
 		}
+		if (!Hidden) {
+			if (Input.GetMouseButton (0) && tempStrengh < MAX_STRENGH) {
+				tempStrengh += Time.deltaTime * STRENGH_PER_FRAME;
+			} else if (onReleasing && tempStrengh > 0) {
+				rigidBody.velocity = -tempOffset * tempStrengh;
+				tempStrengh -= Time.deltaTime * STRENGH_PER_FRAME * STRENGH_RELEASE_COEF;
+			}
+		}
+		if (tempStrengh <= 0.0f && onReleasing) {
+			// Disactivate the cue
+			Desactivate ();
+		} 
+	
 	}
 
 	public bool Hidden {
@@ -70,6 +77,12 @@ public class BilliardCue_Control : MonoBehaviour
 
 	public void Desactivate ()
 	{
+		// Reset
+		tempStrengh = 0.0f;
+		onReleasing = false;
+		rigidBody.velocity = Vector3.zero;
+		rigidBody.angularVelocity = Vector3.zero;
+		// Hide the ball
 		rigidBody.position = HIDDEN_POSITION;
 	}
 
