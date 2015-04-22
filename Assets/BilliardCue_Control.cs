@@ -61,6 +61,7 @@ public class BilliardCue_Control : MonoBehaviour
 				rigidBody.velocity = -tempOffset * tempStrengh;
 				tempStrengh -= Time.deltaTime * STRENGH_PER_FRAME * STRENGH_RELEASE_COEF;
 			}
+			GameComponent_PowerBar.Percentage = tempStrengh/MAX_STRENGH;
 		}
 		if (tempStrengh <= 0.0f && onReleasing) {
 			// Disactivate the cue
@@ -74,12 +75,7 @@ public class BilliardCue_Control : MonoBehaviour
 			return (rigidBody.position - HIDDEN_POSITION).sqrMagnitude < 0.1f;
 		}
 	}
-
-	void OnGUI ()
-	{
-		GUI.Label (new Rect (15, 10, 100, 100), "Strengh = " + tempStrengh.ToString ("0.00"));
-	}
-
+	
 	public void Desactivate ()
 	{
 		// Reset
