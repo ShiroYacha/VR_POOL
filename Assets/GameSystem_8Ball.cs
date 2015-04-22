@@ -31,6 +31,13 @@ public class GameSystem_8Ball : MonoBehaviour
 	
 	}
 
+	
+	void OnMouseUp ()
+	{
+		if(!_cue.OnReleasing)
+			_cue.OnReleasing = true;
+	}
+
 	public static void BallInHole (BilliardBall_Physics objScript)
 	{
 		// Modify game status

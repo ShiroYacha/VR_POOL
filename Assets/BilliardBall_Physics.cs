@@ -6,7 +6,7 @@ public class BilliardBall_Physics : MonoBehaviour
 	protected Vector3 initPosition;
 	protected Rigidbody rigidBody;
 
-	protected float friction = 0.02f;
+	protected float friction = 0.015f;
 	protected float sleepThreshold = 0.3f;
 	
 	protected bool isSleeping = true;
@@ -42,6 +42,9 @@ public class BilliardBall_Physics : MonoBehaviour
 			rigidBody.Sleep();
 			isSleeping=true;
 		}
+		// Make sure balls don't jump
+		var tempVelocity = rigidBody.velocity;
+		rigidBody.velocity = new Vector3(tempVelocity.x,0,tempVelocity.z);
 	}
 
 	public Vector3 Position
