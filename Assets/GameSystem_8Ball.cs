@@ -71,6 +71,7 @@ public class GameSystem_8Ball : MonoBehaviour
 		// Update GUI
 		GUI.Label (new Rect (15, 30, 100, 100), "Player 1 = "+player1Color + player1List,isPlayer1sTurn?activeStyle:passiveStyle );
 		GUI.Label (new Rect (15, 45, 100, 100), "Player 2 = "+player2Color+player2List,!isPlayer1sTurn?activeStyle:passiveStyle );
+		GUI.Label(new Rect(15, 90, 200, 100),"Press 'R' to restart game.");
 	}
 	
 	void OnMouseUp ()
@@ -82,27 +83,35 @@ public class GameSystem_8Ball : MonoBehaviour
 		}
 	}
 
+	public static void RestartGame()
+	{
+		_whiteBall.ResetInitPosition();
+		_eightBalls.ForEach(b=>b.ResetInitPosition());
+	}
+
 	public static void UpdateGameStatus()
 	{
 		if(tempBallInHole.Any())
 		{
 			var currentPlayerList = isPlayer1sTurn?player1sBallInHole:player2sBallInHole;
-			// if white ball falls
-			if(tempBallInHole.Any(b=>b.gameObject.name=="WhiteBall"))
+			bool whiteBallFalls = tempBallInHole.Any(b=>b.gameObject.name=="WhiteBall");
+			// if the 8 ball is in the hole
+			if(tempBallInHole.Any(b=>b.gameObject.name=="8"))
+			{
+				// Reset game
+				RestartGame();
+				// Display winner
+				string winningPlayer = string.Format("Player {0} wins!",
+				                                     (!whiteBallFalls&&isPlayer1sTurn==(currentPlayerList.Count==7))||(whiteBallFalls&&!isPlayer1sTurn)?
+				                                     "1":"2");
+				EditorUtility.DisplayDialog("Congrats!",winningPlayer,"Ok");
+			}
+			// if white ball falls when 8 ball is okay
+			else if(whiteBallFalls)
 			{
 				// Reset everything and switch player
 				tempBallInHole.ForEach(b=>b.ResetInitPosition());
 				isPlayer1sTurn=!isPlayer1sTurn;
-			}
-			// if the 8 ball is in the hole
-			else if(tempBallInHole.Any(b=>b.gameObject.name=="8"))
-			{
-				// Reset game
-				_whiteBall.ResetInitPosition();
-				_eightBalls.ForEach(b=>b.ResetInitPosition());
-				// Display winner
-				string winningPlayer = string.Format("Player {0} wins!",isPlayer1sTurn==(currentPlayerList.Count==7)?"1":"2");
-				EditorUtility.DisplayDialog("Congrats!",winningPlayer,"Ok");
 			}
 			else
 			{
@@ -146,10 +155,13 @@ public class GameSystem_8Ball : MonoBehaviour
 			// White ball falls
 			tempBallInHole.Add(objScript);
 			// Sleep ball
+			objScript.Sleep();
 			objScript.gameObject.SetActive(false);
 		} else if (int.TryParse (objScript.gameObject.name, out number)) {
 			// 8-Ball falls
 			tempBallInHole.Add(objScript);
+			// Sleep ball
+			objScript.Sleep();
 			objScript.gameObject.SetActive(false);
 		} else
 			// something else

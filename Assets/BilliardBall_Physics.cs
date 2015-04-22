@@ -3,13 +3,13 @@ using System.Collections;
 
 public class BilliardBall_Physics : MonoBehaviour
 {
-	const float MAX_TABLE_RANGE = 5.0f;
+	const float MAX_TABLE_RANGE = 1.7f;
 
 	protected Vector3 initPosition;
 	protected Rigidbody rigidBody;
 
 	protected float friction = 0.015f;
-	protected float sleepThreshold = 0.5f;
+	protected float sleepThreshold = 0.02f;
 	
 	protected bool isSleeping = true;
 
@@ -27,7 +27,7 @@ public class BilliardBall_Physics : MonoBehaviour
 	{
 		rigidBody = GetComponent<Rigidbody> ();
 		// Register the init position of the ball
-		initPosition= rigidBody.position;
+		initPosition= transform.position;
 		// Register identity
 		GameSystem_8Ball.Register8Balls (this);
 	}
@@ -36,7 +36,7 @@ public class BilliardBall_Physics : MonoBehaviour
 	protected virtual void Update ()
 	{
 		// Apply friction and sleeping rules
-		if (rigidBody.velocity.magnitude > friction) {
+		if (rigidBody.velocity.magnitude > sleepThreshold) {
 			rigidBody.AddForce (rigidBody.velocity * (-1) * friction, ForceMode.Impulse);
 		} else if(!isSleeping && rigidBody.velocity.magnitude<sleepThreshold) {
 			Sleep();
@@ -57,7 +57,7 @@ public class BilliardBall_Physics : MonoBehaviour
 	public Vector3 Position
 	{
 		get{
-			return rigidBody.position;
+			return transform.position;
 		}
 	}
 
@@ -89,7 +89,7 @@ public class BilliardBall_Physics : MonoBehaviour
 		rigidBody.velocity = Vector3.zero;
 		rigidBody.angularVelocity = Vector3.zero;
 		// reset position 
-		rigidBody.position = initPosition;
+		transform.position=initPosition;
 		// reset activeness
 		if (!gameObject.activeSelf)
 			gameObject.SetActive (true);

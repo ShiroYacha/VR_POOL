@@ -16,7 +16,9 @@ public class BilliardBall_TestMouseShootPhysics : BilliardBall_Physics
 	protected override void Update ()
 	{
 		base.Update ();
-		if(Input.GetKeyDown("1"))
+		if(Input.GetKeyDown("r"))
+			GameSystem_8Ball.RestartGame();
+		else if(Input.GetKeyDown("1"))
 		{
 			// Move white ball to hole left top hole
 			rigidBody.position = new Vector3(1.314f,0.051f,-0.598f);
