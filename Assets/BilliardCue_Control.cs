@@ -14,13 +14,17 @@ public class BilliardCue_Control : MonoBehaviour
 	Rigidbody rigidBody;
 	float tempRotation = 0.0f;
 	float tempStrengh = 0.0f;
-	Vector3 tempOffset;
 	bool onReleasing = false;
+	Vector3 tempOffset;
+	float tempRotationOffset;
 
 	public bool OnReleasing {
 		get{ return onReleasing;}
 		set{ onReleasing = value;}
 	}
+
+	public Vector3 TempOffset{ get{return tempOffset;}}
+	public float TempRotationOffset{ get{return tempRotationOffset;}}
 
 	// Use this for initialization
 	void Start ()
@@ -29,6 +33,7 @@ public class BilliardCue_Control : MonoBehaviour
 		rigidBody = GetComponent<Rigidbody> ();
 		var collider = GetComponent<Collider> ();
 		tempOffset = new Vector3 (TOUCH_OFFSET, 0, 0);
+		tempRotationOffset = 0.0f;
 		// Register identity
 		GameSystem_8Ball.RegisterCue (this);
 		// Hide the cue
@@ -43,10 +48,10 @@ public class BilliardCue_Control : MonoBehaviour
 				float wheel = Input.GetAxis ("Mouse ScrollWheel");
 				GameSystem_8Ball.ActivateCue (wheel * 0.5f);
 			}
-			if(!GameSystem_8Ball.RoundFinished && tempStrengh==0.0f)
-			{
-				GameSystem_8Ball.UpdateGameStatus();
+			if (!GameSystem_8Ball.RoundFinished && tempStrengh == 0.0f) {
+				GameSystem_8Ball.UpdateGameStatus ();
 				GameSystem_8Ball.RoundFinished = true;
+				GameSystem_8Ball.RestoreCamera();
 			}
 		}
 		if (!Hidden) {
@@ -98,6 +103,7 @@ public class BilliardCue_Control : MonoBehaviour
 			Vector3 reference = new Vector3 (0, 0, 1.0f);
 			float sign = Mathf.Sign (Vector3.Dot (tempOffset.normalized, reference));
 			float angle = Vector3.Angle (new Vector3 (-1.0f, 0, 0), tempOffset.normalized) * sign;
+			tempRotationOffset = angle;
 			rigidBody.MoveRotation (Quaternion.Euler (new Vector3 (90.9f, 0, -angle + 90.0f))); 
 		}
 	}
