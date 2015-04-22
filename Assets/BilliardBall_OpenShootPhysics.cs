@@ -9,8 +9,6 @@ public class BilliardBall_OpenShootPhysics : BilliardBall_Physics {
 	protected override void Start()
 	{
 		rigidBody = GetComponent<Rigidbody> ();
-		// Register the init position of the ball
-		initPosition= rigidBody.position;
 		// Register identity
 		GameSystem_8Ball.RegisterWhiteBall (this);
 	}

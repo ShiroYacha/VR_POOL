@@ -115,14 +115,21 @@ public class GameSystem_8Ball : MonoBehaviour
 					player1Color = player1PlaysFull?BallColor.Full:BallColor.Half;
 					player2Color = !player1PlaysFull?BallColor.Full:BallColor.Half;
 				}
+				// if the first ball is the opponent's 
+				else if(isPlayer1sTurn != (player1Color==BallColor.Full == firstBallNumber<8))
+				{
+					isPlayer1sTurn=!isPlayer1sTurn;
+				}
+
 				// Update player's ball list
 				foreach(var ball in tempBallInHole)
 				{
-					if(player1Color==BallColor.Full&&Int32.Parse(ball.gameObject.name)<8)
+					if(player1Color==BallColor.Full==Int32.Parse(ball.gameObject.name)<8)
 						player1sBallInHole.Add(ball.gameObject.name);
 					else 
 						player2sBallInHole.Add(ball.gameObject.name);
 				}
+
 			}
 			// Reset
 			tempBallInHole.Clear();
