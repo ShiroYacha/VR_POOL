@@ -54,6 +54,12 @@ public class BilliardBall_Physics : MonoBehaviour
 		}
 	}
 
+	// pass the mouse up event to the main table
+	void OnMouseUp()
+	{
+		GameSystem_8Ball.MouseUpEventHandler ();
+	}
+
 	public Vector3 Position
 	{
 		get{
@@ -89,7 +95,11 @@ public class BilliardBall_Physics : MonoBehaviour
 		rigidBody.velocity = Vector3.zero;
 		rigidBody.angularVelocity = Vector3.zero;
 		// reset position 
-		transform.position=initPosition;
+		if (gameObject.name == "WhiteBall")// hack to fix the white ball
+			transform.position = new Vector3(0.9f,0.052f,0.0f);
+		else
+			transform.position = initPosition;
+
 		// reset activeness
 		if (!gameObject.activeSelf)
 			gameObject.SetActive (true);

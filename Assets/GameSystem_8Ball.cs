@@ -92,6 +92,11 @@ public class GameSystem_8Ball : MonoBehaviour
 	
 	void OnMouseUp ()
 	{
+		MouseUpEventHandler ();
+	}
+
+	public static void MouseUpEventHandler()
+	{
 		if (!_cue.OnReleasing) {
 			RoundFinished = false;
 			_cue.OnReleasing = true;
