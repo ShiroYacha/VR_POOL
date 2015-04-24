@@ -87,7 +87,7 @@ public class GameSystem_8Ball : MonoBehaviour
 		// Update GUI
 		GUI.Label (new Rect (15, 30, 100, 100), "Player 1 = " + player1Color + player1List, isPlayer1sTurn ? activeStyle : passiveStyle);
 		GUI.Label (new Rect (15, 45, 100, 100), "Player 2 = " + player2Color + player2List, !isPlayer1sTurn ? activeStyle : passiveStyle);
-		GUI.Label (new Rect (15, 90, 200, 100), "Press 'R' to restart game.");
+		GUI.Label (new Rect (15, 60, 200, 100), "Press 'R' to restart game.");
 	}
 	
 	void OnMouseUp ()
@@ -199,10 +199,10 @@ public class GameSystem_8Ball : MonoBehaviour
 			return;
 	}
 
-	public static void ActivateCue (float wheel)
+	public static void ActivateCue (float degree)
 	{
 		// Move it to the white ball at the direction of the closest ball to hit
-		_cue.Activate (_whiteBall.Position, wheel);
+		_cue.Activate (_whiteBall.Position, degree);
 		// Update camera
 		_cueCamera.transform.position = new Vector3 (_whiteBall.Position.x, 0.15f, _whiteBall.Position.z) + _cue.TempOffset * 1.5f;
 		_cueCamera.transform.rotation = Quaternion.Euler (new Vector3 (15.0f, _cue.TempRotationOffset ==0.0f? -90.0f:_cue.TempRotationOffset+90.0f, 0));
