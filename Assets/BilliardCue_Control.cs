@@ -5,7 +5,7 @@ using System.Resources;
 
 public class BilliardCue_Control : MonoBehaviour
 {
-	public static event Action OnRotateCue;
+	public static event Func<float> OnRotateCue;
 	public static event Func<bool> OnShootingCue;
 	public static event Func<bool> OnReleaseCue;
 
@@ -48,7 +48,7 @@ public class BilliardCue_Control : MonoBehaviour
 	{
 		if (GameSystem_8Ball.Stabalized) {
 			if (!onReleasing) {
-				OnRotateCue();
+				GameSystem_8Ball.ActivateCue(OnRotateCue());
 			}
 			if (!GameSystem_8Ball.RoundFinished && tempStrengh == 0.0f) {
 				GameSystem_8Ball.UpdateGameStatus ();
