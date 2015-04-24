@@ -52,6 +52,7 @@ public class GameSystem_8Ball : MonoBehaviour
 		_cueCamera = GameObject.FindWithTag ("CueCamera").GetComponent<Camera> ();
 		_mainCamera.enabled = true;
 		_cueCamera.enabled = false;
+		isMainCameraInUse = true;
 		// Initialize game rule
 		isPlayer1sTurn = true;
 		RoundFinished = true;
@@ -90,21 +91,6 @@ public class GameSystem_8Ball : MonoBehaviour
 		GUI.Label (new Rect (15, 60, 200, 100), "Press 'R' to restart game.");
 	}
 	
-	void OnMouseUp ()
-	{
-		MouseUpEventHandler ();
-	}
-
-	public static void MouseUpEventHandler()
-	{
-		if (!_cue.OnReleasing) {
-			RoundFinished = false;
-			_cue.OnReleasing = true;
-			// switch to main camera
-			TemporarySwitchToMainCamera();
-		}
-	}
-
 	public static void RestoreCamera()
 	{
 		_mainCamera.enabled = isMainCameraInUse;

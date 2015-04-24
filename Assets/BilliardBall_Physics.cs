@@ -53,13 +53,7 @@ public class BilliardBall_Physics : MonoBehaviour
 			Sleep();
 		}
 	}
-
-	// pass the mouse up event to the main table
-	void OnMouseUp()
-	{
-		GameSystem_8Ball.MouseUpEventHandler ();
-	}
-
+	
 	public Vector3 Position
 	{
 		get{

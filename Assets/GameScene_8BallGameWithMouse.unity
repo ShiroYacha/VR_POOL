@@ -258,7 +258,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 153766415}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4fbe37012d8e19e4481547c064976007, type: 3}
+  m_Script: {fileID: 0}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &155095942
@@ -2066,6 +2066,7 @@ GameObject:
   - 23: {fileID: 1144443654}
   - 114: {fileID: 1144443658}
   - 54: {fileID: 1144443659}
+  - 114: {fileID: 1144443660}
   m_Layer: 0
   m_Name: Cue
   m_TagString: Untagged
@@ -2155,6 +2156,17 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 4
   m_CollisionDetection: 0
+--- !u!114 &1144443660
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1144443653}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2de81c0248d090a4b95061b6e9495dc0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1165208076
 GameObject:
   m_ObjectHideFlags: 0

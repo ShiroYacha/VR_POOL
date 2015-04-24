@@ -5,6 +5,9 @@ using System.Resources;
 
 public class BilliardCue_Control : MonoBehaviour
 {
+	public static event Action OnRotateCue;
+	public static event Func<bool> OnShootingCue;
+	public static event Func<bool> OnReleaseCue;
 
 	Vector3 HIDDEN_POSITION = new Vector3 (999.0f, 0.1f, 999.0f);
 	float STRENGH_PER_FRAME = 50.0f;
@@ -45,18 +48,26 @@ public class BilliardCue_Control : MonoBehaviour
 	{
 		if (GameSystem_8Ball.Stabalized) {
 			if (!onReleasing) {
-				float wheel = Input.GetAxis ("Mouse ScrollWheel");
-				GameSystem_8Ball.ActivateCue (wheel * 0.5f);
+				OnRotateCue();
 			}
 			if (!GameSystem_8Ball.RoundFinished && tempStrengh == 0.0f) {
 				GameSystem_8Ball.UpdateGameStatus ();
 				GameSystem_8Ball.RoundFinished = true;
 				GameSystem_8Ball.RestoreCamera();
 			}
+			else if(OnReleaseCue())
+			{
+				if (!OnReleasing) {
+					GameSystem_8Ball.RoundFinished = false;
+					OnReleasing = true;
+					// switch to main camera
+					GameSystem_8Ball.TemporarySwitchToMainCamera();
+				}
+			}
 		}
 		if (!Hidden) {
-			if (Input.GetMouseButton (0) && tempStrengh < MAX_STRENGH) {
-				tempStrengh += Time.deltaTime * STRENGH_PER_FRAME;
+			if (tempStrengh < MAX_STRENGH && OnShootingCue()) {
+				tempStrengh += STRENGH_PER_FRAME*Time.deltaTime;
 			} else if (onReleasing && tempStrengh > 0) {
 				rigidBody.velocity = -tempOffset * tempStrengh;
 				tempStrengh -= Time.deltaTime * STRENGH_PER_FRAME * STRENGH_RELEASE_COEF;
@@ -87,14 +98,19 @@ public class BilliardCue_Control : MonoBehaviour
 		rigidBody.position = HIDDEN_POSITION;
 	}
 
-	public void Activate (Vector3 position, float wheel)
+	/// <summary>
+	/// Puts the cue at the position with an offset, and rotate it with a degree (-1 to 1, 0 means don't rotate).
+	/// </summary>
+	/// <param name="position">Position.</param>
+	/// <param name="degree">Degree (between -1 and 1).</param>
+	public void Activate (Vector3 position, float degree)
 	{
 
 		// Move it to the centor of the position with the offset of the length of the 
-		tempRotation += wheel;
+		tempRotation += degree;
 		tempOffset = new Vector3 ((float)(TOUCH_OFFSET * Math.Cos (tempRotation)), 0.0f, (float)(TOUCH_OFFSET * Math.Sin (tempRotation)));
 		rigidBody.position = position + tempOffset;
-		if (wheel != 0) {
+		if (degree != 0) {
 			tempOffset.y = 0.0f;
 			Vector3 reference = new Vector3 (0, 0, 1.0f);
 			float sign = Mathf.Sign (Vector3.Dot (tempOffset.normalized, reference));
