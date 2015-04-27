@@ -254,12 +254,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd815635398474cbbba564563a209f82, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  doUpdate: 1
-  rescaleController: 1
   imageIndex: 0
-  imageColor: {r: 1, g: 1, b: 1, a: 1}
+  imageColor:
+    r: 1
+    g: 1
+    b: 1
+    a: 1
   gammaCorrection: 1
-  overlayImage: 0
   undistortImage: 1
   blackIsTransparent: 1
 --- !u!23 &315282821
@@ -362,7 +363,6 @@ MonoBehaviour:
   fadeInTime: 1
   fadeOutTime: 1
   fade:
-    serializedVersion: 2
     m_Curve:
     - time: 0
       value: 0
@@ -379,7 +379,11 @@ MonoBehaviour:
   waitFrames: 10
   embeddedReplacementImage: {fileID: 2800000, guid: ebc61a8ce70eb495494d1209ae9dbf43,
     type: 3}
-  onColor: {r: .544117689, g: .544117689, b: .544117689, a: 1}
+  onColor:
+    r: .544117689
+    g: .544117689
+    b: .544117689
+    a: 1
 --- !u!131 &463383880
 GUITexture:
   m_ObjectHideFlags: 0
@@ -624,12 +628,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd815635398474cbbba564563a209f82, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  doUpdate: 1
-  rescaleController: 1
   imageIndex: 0
-  imageColor: {r: 1, g: 1, b: 1, a: 1}
+  imageColor:
+    r: 1
+    g: 1
+    b: 1
+    a: 1
   gammaCorrection: 1
-  overlayImage: 0
   undistortImage: 1
   blackIsTransparent: 1
 --- !u!23 &1622595793
