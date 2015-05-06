@@ -18,7 +18,7 @@ public class BilliardBall_OpenShootPhysics : BilliardBall_Physics {
 	{
 		base.Update ();
 		// Shoot again
-		if (GameSystem_8Ball.Stabalized) {
+		if (GameSystem_8Ball.Stabilized) {
 			// wake object up
 			rigidBody.WakeUp();
 			isSleeping = false;

@@ -2,11 +2,14 @@
 using System.Collections;
 using Leap;
 
-public class BilliardCue_LeapCommand : MonoBehaviour {
+public class BilliardCue_LeapCommand_PushPull : MonoBehaviour {
 
 	GameObject controller;
 	bool closedHand = false;
 	bool openedHand = false;
+	bool enterHand = false;
+	bool leaveHand = false;
+
 	// Use this for initialization
 	void Start () {
 		BilliardCue_Control.OnRotateCue += RotateCueWithWheel;
@@ -14,11 +17,12 @@ public class BilliardCue_LeapCommand : MonoBehaviour {
 		BilliardCue_Control.OnReleaseCue += ReleaseCueWithLeftMouse;
 		BilliardCue_Control.OnUsePullingeCue += usePull;
 		BilliardCue_Control.OnPullingCue += GrabbingCue;
+		BilliardCue_Control.ioHandView += ioHand;
 		controller = GameObject.Find ("HandController");
 	}
 
 	bool usePull(){
-		return false;
+		return true;
 	}
 
 	/// </summary>
@@ -91,7 +95,21 @@ public class BilliardCue_LeapCommand : MonoBehaviour {
 	}
 
 	float GrabbingCue(){
-		
-		return 0.0f;
+		LeapCommand leap = controller.GetComponent<LeapCommand> ();
+		Vector position = leap.getPosition ();
+		int max_dist = 150;
+		float dist = 0.0f;
+		if (position.z > 0)
+			dist = position.z;
+		if (dist > max_dist)
+			dist = max_dist;
+		dist = dist / max_dist * 100;
+		return dist;
+	}
+
+	int ioHand(){
+		LeapCommand leap = controller.GetComponent<LeapCommand> ();
+		int count = leap.getHandCount ();
+		return count;
 	}
 }

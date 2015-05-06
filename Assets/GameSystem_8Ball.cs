@@ -18,9 +18,9 @@ public class GameSystem_8Ball : MonoBehaviour
 	static BilliardBall_Physics _whiteBall;
 	static BilliardCue_Control _cue;
 	static GameSystem_8Ball _table;
-	static Camera _mainCamera;
-	static Camera _cueCamera;
-	static bool isMainCameraInUse;
+	public static Camera _mainCamera;
+	public static Camera _cueCamera;
+	public static bool isMainCameraInUse;
 	static bool isPlayer1sTurn;
 	static List<string> player1sBallInHole = new List<string> ();
 	static List<string> player2sBallInHole = new List<string> ();
@@ -35,7 +35,7 @@ public class GameSystem_8Ball : MonoBehaviour
 		set;
 	}
 
-	public static bool Stabalized {
+	public static bool Stabilized {
 		get {
 			if (_whiteBall == null || !_eightBalls.Any () || _cue == null)
 				return false;
@@ -68,12 +68,12 @@ public class GameSystem_8Ball : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
-		if (Input.GetKeyDown ("c")) {
+		/*if (Input.GetKeyDown ("c")) {
 			_mainCamera.enabled = !_mainCamera.enabled;
 			_cueCamera.enabled = !_cueCamera.enabled;
 			// store camera state
 			isMainCameraInUse = _mainCamera.enabled;
-		}
+		}*/
 	}
 
 	void OnGUI ()

@@ -8,6 +8,12 @@ public class BilliardCue_MouseCommand : MonoBehaviour {
 		BilliardCue_Control.OnRotateCue += RotateCueWithWheel;
 		BilliardCue_Control.OnShootingCue += ShootCueWithLeftMouse;
 		BilliardCue_Control.OnReleaseCue += ReleaseCueWithLeftMouse;
+		BilliardCue_Control.OnUsePullingeCue += usePull;
+		BilliardCue_Control.OnPullingCue += GrabbingCue;
+	}
+
+	bool usePull(){
+		return false;
 	}
 
 	/// <summary>
@@ -37,5 +43,10 @@ public class BilliardCue_MouseCommand : MonoBehaviour {
 	{
 		bool leftUp = Input.GetMouseButtonUp (0);
 		return leftUp;
+	}
+
+	float GrabbingCue(){
+
+		return 0.0f;
 	}
 }
