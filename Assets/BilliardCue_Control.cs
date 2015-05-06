@@ -8,10 +8,14 @@ public class BilliardCue_Control : MonoBehaviour
 	public static event Func<float> OnRotateCue;
 	public static event Func<bool> OnShootingCue;
 	public static event Func<bool> OnReleaseCue;
+	public static event Func<float> OnPullingCue;
+	public static event Func<bool> OnUsePullingeCue;
+	public static event Func<int> ioHandView;
 
 	Vector3 HIDDEN_POSITION = new Vector3 (999.0f, 0.1f, 999.0f);
 	float STRENGH_PER_FRAME = 50.0f;
-	float MAX_STRENGH = 30.0f;
+	float MAX_STRENGH = 25.0f;
+	float MIN_STENGH = 5.0f;
 	float STRENGH_RELEASE_COEF = 3.0f;
 	float TOUCH_OFFSET = 0.2f;
 	Rigidbody rigidBody;
@@ -46,11 +50,11 @@ public class BilliardCue_Control : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
-		if (GameSystem_8Ball.Stabalized) {
+		if (GameSystem_8Ball.Stabilized) {
 			if (!onReleasing) {
 				GameSystem_8Ball.ActivateCue(OnRotateCue());
 			}
-			if (!GameSystem_8Ball.RoundFinished && tempStrengh == 0.0f) {
+			if (!GameSystem_8Ball.RoundFinished && tempStrengh < 2.0f) {
 				GameSystem_8Ball.UpdateGameStatus ();
 				GameSystem_8Ball.RoundFinished = true;
 				GameSystem_8Ball.RestoreCamera();
@@ -66,15 +70,25 @@ public class BilliardCue_Control : MonoBehaviour
 			}
 		}
 		if (!Hidden) {
-			if (tempStrengh < MAX_STRENGH && OnShootingCue()) {
-				tempStrengh += STRENGH_PER_FRAME*Time.deltaTime;
+			if (ioHandView () > 0) {
+				GameSystem_8Ball.TemporarySwitchToCueCamera ();
+			} else {
+				GameSystem_8Ball.TemporarySwitchToMainCamera ();
+			}
+			if (tempStrengh < MAX_STRENGH && !OnUsePullingeCue () && OnShootingCue ()) {
+				tempStrengh += STRENGH_PER_FRAME * Time.deltaTime;
+			} else if (OnUsePullingeCue () && OnShootingCue ()) {
+				tempStrengh = OnPullingCue () / 100 * MAX_STRENGH;
+			
 			} else if (onReleasing && tempStrengh > 0) {
-				rigidBody.velocity = -tempOffset * tempStrengh;
+				rigidBody.velocity = -tempOffset * (tempStrengh + MIN_STENGH);
 				tempStrengh -= Time.deltaTime * STRENGH_PER_FRAME * STRENGH_RELEASE_COEF;
 			}
-			GameComponent_PowerBar.Percentage = tempStrengh/MAX_STRENGH;
+			GameComponent_PowerBar.Percentage = tempStrengh / MAX_STRENGH;
+		} else {
+			GameSystem_8Ball.TemporarySwitchToMainCamera();
 		}
-		if (tempStrengh <= 0.0f && onReleasing) {
+		if (tempStrengh <= 1.0f && onReleasing) {
 			// Disactivate the cue
 			Desactivate ();
 		} 
