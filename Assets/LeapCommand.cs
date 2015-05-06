@@ -39,6 +39,6 @@ public class LeapCommand : MonoBehaviour {
 	void OnGUI()
 	{
 		GUI.Label (new Rect (0, 0, 100, 100), strength.ToString());
-		GUI.Label (new Rect (0, 100, 100, 100), hand_position.ToString());
+		if(hand_position!=null) GUI.Label (new Rect (0, 100, 100, 100), hand_position.ToString());
 	}
 }
