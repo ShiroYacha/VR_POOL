@@ -91,19 +91,19 @@ public class GameSystem_8Ball : MonoBehaviour
 		GUI.Label (new Rect (15, 60, 200, 100), "Press 'R' to restart game.");
 	}
 	
-	public static void RestoreCamera()
+	public static void RestoreCamera ()
 	{
 		_mainCamera.enabled = isMainCameraInUse;
 		_cueCamera.enabled = !isMainCameraInUse;
 	}
 
-	public static void TemporarySwitchToMainCamera()
+	public static void TemporarySwitchToMainCamera ()
 	{
 		_mainCamera.enabled = true;
 		_cueCamera.enabled = false;
 	}
 
-	public static void TemporarySwitchToCueCamera()
+	public static void TemporarySwitchToCueCamera ()
 	{
 		_mainCamera.enabled = false;
 		_cueCamera.enabled = true;
@@ -162,6 +162,9 @@ public class GameSystem_8Ball : MonoBehaviour
 			tempBallInHole.Clear ();
 		} else // switch player if nothing happens
 			isPlayer1sTurn = !isPlayer1sTurn;
+		// Restore ball highlighting
+		foreach (var ball in _eightBalls)
+			ball.RestoreAlpha ();
 	}
 
 	public static void BallInHole (BilliardBall_Physics objScript)
@@ -191,7 +194,10 @@ public class GameSystem_8Ball : MonoBehaviour
 		_cue.Activate (_whiteBall.Position, degree);
 		// Update camera
 		_cueCamera.transform.position = new Vector3 (_whiteBall.Position.x, 0.15f, _whiteBall.Position.z) + _cue.TempOffset * 1.5f;
-		_cueCamera.transform.rotation = Quaternion.Euler (new Vector3 (15.0f, _cue.TempRotationOffset ==0.0f? -90.0f:_cue.TempRotationOffset+90.0f, 0));
+		_cueCamera.transform.rotation = Quaternion.Euler (new Vector3 (15.0f, _cue.TempRotationOffset == 0.0f ? -90.0f : _cue.TempRotationOffset + 90.0f, 0));
+		// Highlight target balls (inverse other)
+		foreach (var ball in _eightBalls)
+			ball.LerpAlpha (isPlayer1sTurn ? player1Color : player2Color);
 	}
 	
 	public static void Register8Balls (BilliardBall_Physics eightBall)

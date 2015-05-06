@@ -5,12 +5,15 @@ public class BilliardBall_Physics : MonoBehaviour
 {
 	const float MAX_TABLE_RANGE = 1.7f;
 
+	protected Renderer renderer;
+
 	protected Vector3 initPosition;
 	protected Rigidbody rigidBody;
 
 	protected float friction = 0.015f;
 	protected float sleepThreshold = 0.02f;
-	
+	protected Color originalColor;
+
 	protected bool isSleeping = true;
 
 	public bool IsSleeping 
@@ -26,8 +29,10 @@ public class BilliardBall_Physics : MonoBehaviour
 	protected virtual void Start ()
 	{
 		rigidBody = GetComponent<Rigidbody> ();
+		renderer = GetComponent<Renderer>();
 		// Register the init position of the ball
 		initPosition= transform.position;
+		originalColor = renderer.material.color;
 		// Register identity
 		GameSystem_8Ball.Register8Balls (this);
 	}
@@ -59,6 +64,22 @@ public class BilliardBall_Physics : MonoBehaviour
 		get{
 			return transform.position;
 		}
+	}
+
+	public void LerpAlpha(BallColor colorType)
+	{
+		int number = System.Int16.Parse(gameObject.name);
+		if(number!=8 && (colorType==BallColor.Full && number>8)|| (colorType==BallColor.Half && number<8))
+		{
+			Color color = originalColor;
+			color.a -= 0.5f;
+			renderer.material.color= color;
+		}
+	}
+
+	public void RestoreAlpha()
+	{
+		renderer.material.color=originalColor;
 	}
 
 	public void Sleep()
