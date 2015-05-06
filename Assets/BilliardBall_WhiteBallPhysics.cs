@@ -3,6 +3,8 @@ using System.Collections;
 
 public class BilliardBall_WhiteBallPhysics : BilliardBall_Physics
 {
+	public bool WasHitByCue {get;set;}
+
 	protected override void Start()
 	{
 		rigidBody = GetComponent<Rigidbody> ();
@@ -19,6 +21,12 @@ public class BilliardBall_WhiteBallPhysics : BilliardBall_Physics
 			GameSystem_8Ball.RestartGame();
 	}
 
-
-
+	protected override void OnCollisionEnter (Collision col)
+	{
+		base.OnCollisionEnter(col);
+		if(col.gameObject.name=="Cue")
+		{
+			WasHitByCue = true;
+		}
+	}
 }

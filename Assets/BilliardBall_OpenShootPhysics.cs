@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class BilliardBall_OpenShootPhysics : BilliardBall_Physics {
+public class BilliardBall_OpenShootPhysics : BilliardBall_WhiteBallPhysics {
 	
 	float maxForce = 5.0f;
 	float minForce = 3.0f;

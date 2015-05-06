@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class BilliardBall_TestMouseShootPhysics : BilliardBall_Physics
+public class BilliardBall_TestMouseShootPhysics : BilliardBall_WhiteBallPhysics
 {
 	protected override void Start()
 	{

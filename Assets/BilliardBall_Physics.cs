@@ -90,7 +90,7 @@ public class BilliardBall_Physics : MonoBehaviour
 		isSleeping=true;
 	}
 
-	void OnCollisionEnter (Collision col)
+	protected virtual void OnCollisionEnter (Collision col)
 	{
 		if (col.gameObject.name.StartsWith ("Hole")) {
 			// signal the system

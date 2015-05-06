@@ -15,7 +15,7 @@ public enum BallColor
 public class GameSystem_8Ball : MonoBehaviour
 {
 	static List<BilliardBall_Physics> _eightBalls = new List<BilliardBall_Physics> ();
-	static BilliardBall_Physics _whiteBall;
+	static BilliardBall_WhiteBallPhysics _whiteBall;
 	static BilliardCue_Control _cue;
 	static GameSystem_8Ball _table;
 	static Camera _mainCamera;
@@ -160,8 +160,11 @@ public class GameSystem_8Ball : MonoBehaviour
 			}
 			// Reset
 			tempBallInHole.Clear ();
-		} else // switch player if nothing happens
+		} else if(_whiteBall.WasHitByCue)// switch player if nothing happens and the white ball is hit
+		{
+			_whiteBall.WasHitByCue = false;
 			isPlayer1sTurn = !isPlayer1sTurn;
+		}
 		// Restore ball highlighting
 		foreach (var ball in _eightBalls)
 			ball.RestoreAlpha ();
@@ -208,7 +211,7 @@ public class GameSystem_8Ball : MonoBehaviour
 			Physics.IgnoreCollision (_cue.gameObject.GetComponent<Collider> (), eightBall.gameObject.GetComponent<Collider> ());
 	}
 
-	public static void RegisterWhiteBall (BilliardBall_Physics whiteBall)
+	public static void RegisterWhiteBall (BilliardBall_WhiteBallPhysics whiteBall)
 	{
 		_whiteBall = whiteBall;
 	}
