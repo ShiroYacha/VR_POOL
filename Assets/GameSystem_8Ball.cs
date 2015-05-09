@@ -85,14 +85,16 @@ public class GameSystem_8Ball : MonoBehaviour
 	}
 
 	void UpdateFaceDistance ()
-	{
+	{	// camera position (close to far): 2.6 - 1.9 - 1.3
 		if (_receiver != null) {
 			string raw = _receiver.lastReceivedUDPPacket;
 			float dist;
 			if (raw != null && raw != "" && float.TryParse (raw.Split (' ') [2], out dist)) {
 				float normDist = (dist - 0.2f) / 0.3f;
-				Vector3 pos = _quad.transform.position;
-				_quad.transform.position = new Vector3 (pos.x, normDist * 0.4f + 0.8f, pos.z);
+				Vector3 pos = _mainCamera.transform.position;
+				float y =2.6f - normDist * 1.3f;
+				if(y>1.3 && y<2.6)
+					_mainCamera.transform.position = new Vector3 (pos.x,y , pos.z);
 			}
 		}
 	}
