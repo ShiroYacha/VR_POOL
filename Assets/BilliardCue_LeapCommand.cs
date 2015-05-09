@@ -13,6 +13,7 @@ public class BilliardCue_LeapCommand : MonoBehaviour {
 		BilliardCue_Control.OnShootingCue += ShootCueWithLeftMouse;
 		BilliardCue_Control.OnReleaseCue += ReleaseCueWithLeftMouse;
 		BilliardCue_Control.OnUsePullingeCue += usePull;
+		BilliardCue_Control.ioHandView += ioHand;
 		BilliardCue_Control.OnPullingCue += GrabbingCue;
 		controller = GameObject.Find ("HandController");
 	}
@@ -93,5 +94,11 @@ public class BilliardCue_LeapCommand : MonoBehaviour {
 	float GrabbingCue(){
 		
 		return 0.0f;
+	}
+
+	int ioHand(){
+		LeapCommand leap = controller.GetComponent<LeapCommand> ();
+		int count = leap.getHandCount ();
+		return count;
 	}
 }

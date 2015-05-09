@@ -25,13 +25,21 @@ public class BilliardCue_Control : MonoBehaviour
 	Vector3 tempOffset;
 	float tempRotationOffset;
 
+	public bool IsCameraAuto
+	{
+		get{
+			return ioHandView!=null;
+		}
+	}
+
 	public bool OnReleasing {
 		get{ return onReleasing;}
 		set{ onReleasing = value;}
 	}
 
-	public Vector3 TempOffset{ get{return tempOffset;}}
-	public float TempRotationOffset{ get{return tempRotationOffset;}}
+	public Vector3 TempOffset{ get { return tempOffset; } }
+
+	public float TempRotationOffset{ get { return tempRotationOffset; } }
 
 	// Use this for initialization
 	void Start ()
@@ -52,32 +60,32 @@ public class BilliardCue_Control : MonoBehaviour
 	{
 		if (GameSystem_8Ball.Stabilized) {
 			if (!onReleasing) {
-				GameSystem_8Ball.ActivateCue(OnRotateCue());
+				GameSystem_8Ball.ActivateCue (OnRotateCue ());
 			}
 			if (!GameSystem_8Ball.RoundFinished && tempStrengh < 2.0f) {
 				GameSystem_8Ball.UpdateGameStatus ();
 				GameSystem_8Ball.RoundFinished = true;
-				GameSystem_8Ball.RestoreCamera();
-			}
-			else if(OnReleaseCue())
-			{
+				GameSystem_8Ball.RestoreCamera ();
+			} else if (OnReleaseCue ()) {
 				if (!OnReleasing) {
 					GameSystem_8Ball.RoundFinished = false;
 					OnReleasing = true;
 					// switch to main camera
-					GameSystem_8Ball.TemporarySwitchToMainCamera();
+					GameSystem_8Ball.TemporarySwitchToMainCamera ();
 				}
 			}
 		}
 		if (!Hidden) {
-			if (ioHandView () > 0) {
-				GameSystem_8Ball.TemporarySwitchToCueCamera ();
-			} else {
-				GameSystem_8Ball.TemporarySwitchToMainCamera ();
+			if (ioHandView != null) {
+				if (ioHandView () > 0) {
+					GameSystem_8Ball.TemporarySwitchToCueCamera ();
+				} else {
+					GameSystem_8Ball.TemporarySwitchToMainCamera ();
+				}
 			}
-			if (tempStrengh < MAX_STRENGH && !OnUsePullingeCue () && OnShootingCue ()) {
+			if (tempStrengh < MAX_STRENGH && (OnUsePullingeCue==null ||(OnUsePullingeCue!=null && !OnUsePullingeCue ()))&& OnShootingCue ()) {
 				tempStrengh += STRENGH_PER_FRAME * Time.deltaTime;
-			} else if (OnUsePullingeCue () && OnShootingCue ()) {
+			} else if ((OnUsePullingeCue==null ||(OnUsePullingeCue!=null && OnUsePullingeCue ())) && OnShootingCue ()) {
 				tempStrengh = OnPullingCue () / 100 * MAX_STRENGH;
 			
 			} else if (onReleasing && tempStrengh > 0) {
@@ -86,7 +94,7 @@ public class BilliardCue_Control : MonoBehaviour
 			}
 			GameComponent_PowerBar.Percentage = tempStrengh / MAX_STRENGH;
 		} else {
-			GameSystem_8Ball.TemporarySwitchToMainCamera();
+			GameSystem_8Ball.TemporarySwitchToMainCamera ();
 		}
 		if (tempStrengh <= 1.0f && onReleasing) {
 			// Disactivate the cue
@@ -119,7 +127,6 @@ public class BilliardCue_Control : MonoBehaviour
 	/// <param name="degree">Degree (between -1 and 1).</param>
 	public void Activate (Vector3 position, float degree)
 	{
-
 		// Move it to the centor of the position with the offset of the length of the 
 		tempRotation += degree;
 		tempOffset = new Vector3 ((float)(TOUCH_OFFSET * Math.Cos (tempRotation)), 0.0f, (float)(TOUCH_OFFSET * Math.Sin (tempRotation)));

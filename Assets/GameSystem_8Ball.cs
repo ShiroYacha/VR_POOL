@@ -20,6 +20,9 @@ public class GameSystem_8Ball : MonoBehaviour
 	static GameSystem_8Ball _table;
 	public static Camera _mainCamera;
 	public static Camera _cueCamera;
+	static UDPReceive _receiver;
+	static GameObject _quad;
+
 	public static bool isMainCameraInUse;
 	static bool isPlayer1sTurn;
 	static List<string> player1sBallInHole = new List<string> ();
@@ -50,6 +53,7 @@ public class GameSystem_8Ball : MonoBehaviour
 		// Initialize
 		_mainCamera = GameObject.FindWithTag ("MainCamera").GetComponent<Camera> ();
 		_cueCamera = GameObject.FindWithTag ("CueCamera").GetComponent<Camera> ();
+		_quad = GameObject.FindWithTag ("Quad");
 		_mainCamera.enabled = true;
 		_cueCamera.enabled = false;
 		isMainCameraInUse = true;
@@ -68,12 +72,29 @@ public class GameSystem_8Ball : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
-		/*if (Input.GetKeyDown ("c")) {
+		if (Input.GetKeyDown ("c")) {
 			_mainCamera.enabled = !_mainCamera.enabled;
 			_cueCamera.enabled = !_cueCamera.enabled;
 			// store camera state
 			isMainCameraInUse = _mainCamera.enabled;
-		}*/
+		} else if(Input.GetKeyDown("f")){
+			_receiver.Activated = !_receiver.Activated;
+		}
+		// Change the viewport if face is detected
+		UpdateFaceDistance ();
+	}
+
+	void UpdateFaceDistance ()
+	{
+		if (_receiver != null) {
+			string raw = _receiver.lastReceivedUDPPacket;
+			float dist;
+			if (raw != null && raw != "" && float.TryParse (raw.Split (' ') [2], out dist)) {
+				float normDist = (dist - 0.2f) / 0.3f;
+				Vector3 pos = _quad.transform.position;
+				_quad.transform.position = new Vector3 (pos.x, normDist * 0.4f + 0.8f, pos.z);
+			}
+		}
 	}
 
 	void OnGUI ()
@@ -85,10 +106,12 @@ public class GameSystem_8Ball : MonoBehaviour
 		string player2List = " - Scored: ";
 		foreach (var ball in player2sBallInHole)
 			player2List += " " + ball;
+		string faceTracking = _receiver!=null && _receiver.Activated ? "ON" : "OFF";
 		// Update GUI
 		GUI.Label (new Rect (15, 30, 100, 100), "Player 1 = " + player1Color + player1List, isPlayer1sTurn ? activeStyle : passiveStyle);
 		GUI.Label (new Rect (15, 45, 100, 100), "Player 2 = " + player2Color + player2List, !isPlayer1sTurn ? activeStyle : passiveStyle);
-		GUI.Label (new Rect (15, 60, 200, 100), "Press 'R' to restart game.");
+		GUI.Label (new Rect (15, 60, 200, 100), "Face tracking = " + faceTracking);
+		GUI.Label (new Rect (15, 75, 200, 100), "Press 'R' to restart game.");
 	}
 	
 	public static void RestoreCamera ()
@@ -160,8 +183,7 @@ public class GameSystem_8Ball : MonoBehaviour
 			}
 			// Reset
 			tempBallInHole.Clear ();
-		} else if(_whiteBall.WasHitByCue)// switch player if nothing happens and the white ball is hit
-		{
+		} else if (_whiteBall.WasHitByCue) {// switch player if nothing happens and the white ball is hit
 			_whiteBall.WasHitByCue = false;
 			isPlayer1sTurn = !isPlayer1sTurn;
 		}
@@ -214,6 +236,11 @@ public class GameSystem_8Ball : MonoBehaviour
 	public static void RegisterWhiteBall (BilliardBall_WhiteBallPhysics whiteBall)
 	{
 		_whiteBall = whiteBall;
+	}
+
+	public static void RegisterReceiver(UDPReceive receiver)
+	{
+		_receiver = receiver;
 	}
 
 	public static void RegisterCue (BilliardCue_Control cue)

@@ -19,6 +19,7 @@ public class BilliardCue_LeapBimanual1Command : MonoBehaviour
 		BilliardCue_Control.OnRotateCue += RotateCueWithRelativePosition;
 		BilliardCue_Control.OnShootingCue += ShootCueWithHandGrab;
 		BilliardCue_Control.OnReleaseCue += ReleaseCueWithHandGrab;
+		BilliardCue_Control.ioHandView += ioHand;
 		controller = GameObject.Find ("HandController");
 	}
 	
@@ -53,7 +54,7 @@ public class BilliardCue_LeapBimanual1Command : MonoBehaviour
 
 	void OnGUI()
 	{
-		GUI.Label (new Rect (15, 100, 100, 100), "dist = " +dist.ToString());
+		//GUI.Label (new Rect (15, 100, 100, 100), "dist = " +dist.ToString());
 	}
 	
 	/// <summary>
@@ -82,5 +83,11 @@ public class BilliardCue_LeapBimanual1Command : MonoBehaviour
 			return true;
 		}
 		return false;
+	}
+
+	int ioHand(){
+		LeapCommandBimanual leap = controller.GetComponent<LeapCommandBimanual> ();
+		int count = leap.getHandCount ();
+		return count;
 	}
 }
