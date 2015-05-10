@@ -135,11 +135,11 @@ public class UDPReceive : MonoBehaviour
 		return lastReceivedUDPPacket;
 	}
 
-//	void OnDisable ()
-//	{ 
-//		if (receiveThread != null) 
-//			receiveThread.Abort (); 
-//		
-//		client.Close (); 
-//	} 
+	void OnDisable ()
+	{ 
+		if (receiveThread != null) 
+			receiveThread.Abort (); 
+		
+		client.Close (); 
+	} 
 }
