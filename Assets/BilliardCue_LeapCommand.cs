@@ -2,29 +2,21 @@
 using System.Collections;
 using Leap;
 
-public class BilliardCue_LeapCommand : MonoBehaviour {
-
+public class BilliardCue_LeapCommand : BilliardCue_BasicCommand {
+	
 	GameObject controller;
 	bool closedHand = false;
 	bool openedHand = false;
-	// Use this for initialization
+	
 	void Start () {
-		BilliardCue_Control.OnRotateCue += RotateCueWithWheel;
-		BilliardCue_Control.OnShootingCue += ShootCueWithLeftMouse;
-		BilliardCue_Control.OnReleaseCue += ReleaseCueWithLeftMouse;
-		BilliardCue_Control.OnUsePullingeCue += usePull;
-		BilliardCue_Control.ioHandView += ioHand;
-		BilliardCue_Control.OnPullingCue += GrabbingCue;
+
 		controller = GameObject.Find ("HandController");
+		GameSystem_8Ball.RegisterCommand (1,this);
 	}
 
-	bool usePull(){
-		return false;
-	}
+	public override string DisplayName { get{return "Leap open/close";}}
 
-	/// </summary>
-	/// <returns>The direction of the rotation (between -1 and 1).</returns>
-	float RotateCueWithWheel()
+	protected override float RotateCue()
 	{
 		LeapCommand leap  = controller.GetComponent<LeapCommand> ();
 		Vector pos = leap.getPosition ();
@@ -44,14 +36,10 @@ public class BilliardCue_LeapCommand : MonoBehaviour {
 				wheel = -dist;
 			}
 		}
-		return wheel * 0.5f;// 0.5 improve the precision
+		return -wheel * 0.5f;// 0.5 improve the precision
 	}
-	
-	/// <summary>
-	/// Shoots the cue with left mouse.
-	/// </summary>
-	/// <returns><c>true</c>, if cue with mouse is shooting, <c>false</c> otherwise.</returns>
-	bool ShootCueWithLeftMouse()
+
+	protected override bool ShootCue()
 	{
 		LeapCommand leap  = controller.GetComponent<LeapCommand> ();
 		int handcount = leap.getHandCount ();
@@ -70,12 +58,8 @@ public class BilliardCue_LeapCommand : MonoBehaviour {
 			return false;
 		}
 	}
-	
-	/// <summary>
-	/// Releases the cue with left mouse.
-	/// </summary>
-	/// <returns><c>true</c>, if cue with left mouse was released, <c>false</c> otherwise.</returns>
-	bool ReleaseCueWithLeftMouse()
+
+	protected override bool ReleaseCue()
 	{
 		LeapCommand leap  = controller.GetComponent<LeapCommand> ();
 		int handcount = leap.getHandCount ();
@@ -91,12 +75,7 @@ public class BilliardCue_LeapCommand : MonoBehaviour {
 		}
 	}
 
-	float GrabbingCue(){
-		
-		return 0.0f;
-	}
-
-	int ioHand(){
+	protected override int IoHand(){
 		LeapCommand leap = controller.GetComponent<LeapCommand> ();
 		int count = leap.getHandCount ();
 		return count;

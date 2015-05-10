@@ -24,6 +24,8 @@ public class GameSystem_8Ball : MonoBehaviour
 	static GameObject _quad;
 
 	public static bool isMainCameraInUse;
+	static int currentInputInUse=-1;
+
 	static bool isPlayer1sTurn;
 	static List<string> player1sBallInHole = new List<string> ();
 	static List<string> player2sBallInHole = new List<string> ();
@@ -32,6 +34,8 @@ public class GameSystem_8Ball : MonoBehaviour
 	static BallColor player2Color;
 	GUIStyle activeStyle;
 	GUIStyle passiveStyle;
+
+	static Dictionary<int,BilliardCue_BasicCommand> commandDictionary;
 
 	public static bool RoundFinished {
 		get;
@@ -57,6 +61,7 @@ public class GameSystem_8Ball : MonoBehaviour
 		_mainCamera.enabled = true;
 		_cueCamera.enabled = false;
 		isMainCameraInUse = true;
+		commandDictionary = new Dictionary<int, BilliardCue_BasicCommand> ();
 		// Initialize game rule
 		isPlayer1sTurn = true;
 		RoundFinished = true;
@@ -68,7 +73,7 @@ public class GameSystem_8Ball : MonoBehaviour
 		passiveStyle = new GUIStyle ();
 		passiveStyle.normal.textColor = Color.gray;
 	}
-	
+
 	// Update is called once per frame
 	void Update ()
 	{
@@ -77,11 +82,34 @@ public class GameSystem_8Ball : MonoBehaviour
 			_cueCamera.enabled = !_cueCamera.enabled;
 			// store camera state
 			isMainCameraInUse = _mainCamera.enabled;
-		} else if(Input.GetKeyDown("f")){
+		} else if (Input.GetKeyDown ("f")) {
 			_receiver.Activated = !_receiver.Activated;
+		} else {
+			for(int i=0;i<commandDictionary.Count; ++i)
+			{
+				// if it's a number than it decides the input way
+				if(Input.GetKeyDown((i+1).ToString())) 
+				{
+					SelectInput(i);
+					break;
+				}
+			}
 		}
+		if (currentInputInUse == -1)
+			SelectInput (0);
 		// Change the viewport if face is detected
 		UpdateFaceDistance ();
+	}
+
+	void SelectInput(int i)
+	{
+		commandDictionary[i].Activate();
+		for(int j=1;j<commandDictionary.Count; ++j)
+		{
+			int target =(i+j)%commandDictionary.Count;
+			commandDictionary[target].Desactivate();
+		}
+		currentInputInUse = i;
 	}
 
 	void UpdateFaceDistance ()
@@ -112,8 +140,9 @@ public class GameSystem_8Ball : MonoBehaviour
 		// Update GUI
 		GUI.Label (new Rect (15, 30, 100, 100), "Player 1 = " + player1Color + player1List, isPlayer1sTurn ? activeStyle : passiveStyle);
 		GUI.Label (new Rect (15, 45, 100, 100), "Player 2 = " + player2Color + player2List, !isPlayer1sTurn ? activeStyle : passiveStyle);
-		GUI.Label (new Rect (15, 60, 200, 100), "Face tracking = " + faceTracking);
-		GUI.Label (new Rect (15, 75, 200, 100), "Press 'R' to restart game.");
+		GUI.Label (new Rect (15, 60, 300, 100), "Input mode = " + commandDictionary[currentInputInUse].DisplayName);
+		GUI.Label (new Rect (15, 75, 300, 100), "Face tracking = " + faceTracking);
+		GUI.Label (new Rect (15, 90, 200, 100), "Press 'R' to restart game.");
 	}
 	
 	public static void RestoreCamera ()
@@ -261,5 +290,11 @@ public class GameSystem_8Ball : MonoBehaviour
 		}
 		// Hide it
 		cue.Desactivate ();
+	}
+
+	public static void RegisterCommand(int key, BilliardCue_BasicCommand command)
+	{
+		commandDictionary [key] = command;
+
 	}
 }

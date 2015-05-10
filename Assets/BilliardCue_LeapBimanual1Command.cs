@@ -2,9 +2,8 @@
 using System.Collections;
 using Leap;
 
-public class BilliardCue_LeapBimanual1Command : MonoBehaviour
+public class BilliardCue_LeapBimanual1Command : BilliardCue_BasicCommand
 {
-
 	GameObject controller;
 	bool closedHand = false;
 	bool openedHand = false;
@@ -16,16 +15,13 @@ public class BilliardCue_LeapBimanual1Command : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-		BilliardCue_Control.OnRotateCue += RotateCueWithRelativePosition;
-		BilliardCue_Control.OnShootingCue += ShootCueWithHandGrab;
-		BilliardCue_Control.OnReleaseCue += ReleaseCueWithHandGrab;
-		BilliardCue_Control.ioHandView += ioHand;
 		controller = GameObject.Find ("HandController");
+		GameSystem_8Ball.RegisterCommand (3,this);
 	}
-	
-	/// </summary>
-	/// <returns>The direction of the rotation (between -1 and 1).</returns>
-	float RotateCueWithRelativePosition ()
+
+	public override string DisplayName { get{return "Leap bimanual open/close";}}
+
+	protected override float RotateCue()
 	{
 		LeapCommandBimanual leap = controller.GetComponent<LeapCommandBimanual> ();
 		float wheel = 0.0f;
@@ -51,17 +47,8 @@ public class BilliardCue_LeapBimanual1Command : MonoBehaviour
 		}
 		return wheel * 0.5f;// 0.5 improve the precision
 	}
-
-	void OnGUI()
-	{
-		//GUI.Label (new Rect (15, 100, 100, 100), "dist = " +dist.ToString());
-	}
 	
-	/// <summary>
-	/// Shoots the cue with left mouse.
-	/// </summary>
-	/// <returns><c>true</c>, if cue with mouse is shooting, <c>false</c> otherwise.</returns>
-	bool ShootCueWithHandGrab ()
+	protected override bool ShootCue()
 	{
 		LeapCommandBimanual leap = controller.GetComponent<LeapCommandBimanual> ();
 		if (leap.getValidGesture() && leap.getBothClose ()) {
@@ -70,12 +57,8 @@ public class BilliardCue_LeapBimanual1Command : MonoBehaviour
 		}
 		return false;
 	}
-	
-	/// <summary>
-	/// Releases the cue with left mouse.
-	/// </summary>
-	/// <returns><c>true</c>, if cue with left mouse was released, <c>false</c> otherwise.</returns>
-	bool ReleaseCueWithHandGrab ()
+
+	protected override bool ReleaseCue()
 	{
 		LeapCommandBimanual leap = controller.GetComponent<LeapCommandBimanual> ();
 		if (startShooting && leap.getValidGesture() && leap.getBothOpen()) {
@@ -85,7 +68,7 @@ public class BilliardCue_LeapBimanual1Command : MonoBehaviour
 		return false;
 	}
 
-	int ioHand(){
+	protected override int IoHand(){
 		LeapCommandBimanual leap = controller.GetComponent<LeapCommandBimanual> ();
 		int count = leap.getHandCount ();
 		return count;
