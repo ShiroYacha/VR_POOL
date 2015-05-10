@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using System;
 
 public enum BallColor
@@ -34,6 +33,8 @@ public class GameSystem_8Ball : MonoBehaviour
 	static BallColor player2Color;
 	GUIStyle activeStyle;
 	GUIStyle passiveStyle;
+	GUIStyle infoStyle;
+	static string gameStatus = "Playing";
 
 	static Dictionary<int,BilliardCue_BasicCommand> commandDictionary;
 
@@ -70,6 +71,8 @@ public class GameSystem_8Ball : MonoBehaviour
 		player2Color = BallColor.TBD;
 		activeStyle = new GUIStyle ();
 		activeStyle.normal.textColor = Color.red;
+		infoStyle = new GUIStyle ();
+		infoStyle.normal.textColor = Color.magenta;
 		passiveStyle = new GUIStyle ();
 		passiveStyle.normal.textColor = Color.gray;
 	}
@@ -142,7 +145,8 @@ public class GameSystem_8Ball : MonoBehaviour
 		GUI.Label (new Rect (15, 45, 100, 100), "Player 2 = " + player2Color + player2List, !isPlayer1sTurn ? activeStyle : passiveStyle);
 		GUI.Label (new Rect (15, 60, 300, 100), "Input mode = " + commandDictionary[currentInputInUse].DisplayName);
 		GUI.Label (new Rect (15, 75, 300, 100), "Face tracking = " + faceTracking);
-		GUI.Label (new Rect (15, 90, 200, 100), "Press 'R' to restart game.");
+		GUI.Label (new Rect (15, 90, 200, 100), "Press 'R' to restart game."); 
+		GUI.Label (new Rect (15, 115, 200, 100), "Game status = " + gameStatus, infoStyle);
 	}
 	
 	public static void RestoreCamera ()
@@ -165,6 +169,9 @@ public class GameSystem_8Ball : MonoBehaviour
 	
 	public static void RestartGame ()
 	{
+		player1Color = BallColor.TBD;
+		player2Color = BallColor.TBD;
+		gameStatus = "Playing";
 		_whiteBall.ResetInitPosition ();
 		_eightBalls.ForEach (b => b.ResetInitPosition ());
 	}
@@ -176,13 +183,11 @@ public class GameSystem_8Ball : MonoBehaviour
 			bool whiteBallFalls = tempBallInHole.Any (b => b.gameObject.name == "WhiteBall");
 			// if the 8 ball is in the hole
 			if (tempBallInHole.Any (b => b.gameObject.name == "8")) {
-				// Reset game
-				RestartGame ();
 				// Display winner
 				string winningPlayer = string.Format ("Player {0} wins!",
 				                                     (!whiteBallFalls && isPlayer1sTurn == (currentPlayerList.Count == 7)) || (whiteBallFalls && !isPlayer1sTurn) ?
 				                                     "1" : "2");
-				EditorUtility.DisplayDialog ("Congrats!", winningPlayer, "Ok");
+				gameStatus="Congrats!"+winningPlayer;
 			}
 			// if white ball falls when 8 ball is okay
 			else if (whiteBallFalls) {
